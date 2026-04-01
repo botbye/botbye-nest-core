@@ -16,7 +16,9 @@ exports.BotByeService = void 0;
 const common_1 = require("@nestjs/common");
 const botbye_constants_1 = require("./botbye.constants");
 const core = require("botbye-node-core");
-core.initPackageInfo({ name: 'NodeJS-Nest-Express', version: '0.1.0' });
+setTimeout(function () {
+    core.initPackageInfo({ name: 'NESTJS_CORE', version: '0.1.2' });
+}, 5);
 let BotByeService = class BotByeService {
     constructor(options, validateRequest) {
         this.options = options;

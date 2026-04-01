@@ -1,7 +1,7 @@
 {
   "name": "botbye-nest-core",
   "main": "index.js",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "BotBye! Core integration for NestJS",
   "private": false,
   "devDependencies": {
@@ -11,6 +11,6 @@
     "@nestjs/common": "^11.0.0"
   },
   "dependencies": {
-    "botbye-node-core": "^1.0.7"
+    "botbye-node-core": "^1.0.8"
   }
 }
