@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExports = exports.getProvidersList = exports.BotByeService = exports.BotByeMiddleware = exports.BotByeResponse = exports.BOTBYE_SERVICE_DI_TOKEN = exports.BOTBYE_MODULE_VALIDATE_REQUEST_DI_TOKEN = exports.BOTBYE_MODULE_OPTIONS_DI_TOKEN = void 0;
+exports.getExports = exports.getProvidersList = exports.BotByeService = exports.BotByeMiddleware = exports.BotByeResponse = exports.BOTBYE_TOKEN_EXTRACTOR_DI_TOKEN = exports.BOTBYE_MODULE_API_DI_TOKEN = exports.BOTBYE_SERVICE_DI_TOKEN = exports.BOTBYE_MODULE_OPTIONS_DI_TOKEN = void 0;
 var botbye_constants_1 = require("./botbye.constants");
 Object.defineProperty(exports, "BOTBYE_MODULE_OPTIONS_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_MODULE_OPTIONS_DI_TOKEN; } });
-Object.defineProperty(exports, "BOTBYE_MODULE_VALIDATE_REQUEST_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_MODULE_VALIDATE_REQUEST_DI_TOKEN; } });
 Object.defineProperty(exports, "BOTBYE_SERVICE_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_SERVICE_DI_TOKEN; } });
-var botbye_decodator_1 = require("./botbye.decodator");
-Object.defineProperty(exports, "BotByeResponse", { enumerable: true, get: function () { return botbye_decodator_1.BotByeResponse; } });
+Object.defineProperty(exports, "BOTBYE_MODULE_API_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_MODULE_API_DI_TOKEN; } });
+Object.defineProperty(exports, "BOTBYE_TOKEN_EXTRACTOR_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_TOKEN_EXTRACTOR_DI_TOKEN; } });
+var botbye_decorator_1 = require("./botbye.decorator");
+Object.defineProperty(exports, "BotByeResponse", { enumerable: true, get: function () { return botbye_decorator_1.BotByeResponse; } });
 var botbye_middleware_1 = require("./botbye.middleware");
 Object.defineProperty(exports, "BotByeMiddleware", { enumerable: true, get: function () { return botbye_middleware_1.BotByeMiddleware; } });
 var botbye_service_1 = require("./botbye.service");

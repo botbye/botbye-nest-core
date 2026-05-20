@@ -15,29 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BotByeService = void 0;
 const common_1 = require("@nestjs/common");
 const botbye_constants_1 = require("./botbye.constants");
-const core = require("botbye-node-core");
-core.initPackageInfo({ name: 'NESTJS_CORE', version: '0.1.3' });
 let BotByeService = class BotByeService {
-    constructor(options, validateRequest) {
+    constructor(options, moduleApi) {
         this.options = options;
-        this.validateRequest = validateRequest;
+        this.moduleApi = moduleApi;
     }
     onModuleInit() {
-        core.init(this.options);
+        this.moduleApi.init(this.options);
     }
-    validate(request) {
-        var _a, _b;
-        return this.validateRequest({
-            request,
-            token: this.options.tokenExtractor(request),
-            customFields: (_b = (_a = this.options).customFieldsExtractor) === null || _b === void 0 ? void 0 : _b.call(_a, request),
-        });
+    evaluate(event) {
+        return this.moduleApi.evaluate(event);
     }
 };
 exports.BotByeService = BotByeService;
 exports.BotByeService = BotByeService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(botbye_constants_1.BOTBYE_MODULE_OPTIONS_DI_TOKEN)),
-    __param(1, (0, common_1.Inject)(botbye_constants_1.BOTBYE_MODULE_VALIDATE_REQUEST_DI_TOKEN)),
-    __metadata("design:paramtypes", [Object, Function])
+    __param(1, (0, common_1.Inject)(botbye_constants_1.BOTBYE_MODULE_API_DI_TOKEN)),
+    __metadata("design:paramtypes", [Object, Object])
 ], BotByeService);

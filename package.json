@@ -1,16 +1,34 @@
 {
-  "name": "botbye-nest-core",
-  "main": "index.js",
-  "version": "0.1.3",
-  "description": "BotBye! Core integration for NestJS",
-  "private": false,
-  "devDependencies": {
-    "@nestjs/common": "^11.0.0"
+  "name": "@botbye/nest-core",
+  "version": "2.0.0",
+  "description": "BotBye! NestJS integration core",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
   },
-  "peerDependencies": {
-    "@nestjs/common": "^11.0.0"
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://botbye.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/botbye/botbye-nest-core"
   },
   "dependencies": {
-    "botbye-node-core": "^1.0.8"
+    "@botbye/node-core": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": ">=10"
   }
 }

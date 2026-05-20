@@ -23,14 +23,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BotByeMiddleware = void 0;
 const common_1 = require("@nestjs/common");
+const node_core_1 = require("@botbye/node-core");
 const botbye_constants_1 = require("./botbye.constants");
 let BotByeMiddleware = class BotByeMiddleware {
-    constructor(botbyeService) {
+    constructor(botbyeService, moduleApi, tokenExtractor) {
         this.botbyeService = botbyeService;
+        this.moduleApi = moduleApi;
+        this.tokenExtractor = tokenExtractor;
     }
     use(request, _, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            request.__botbye_response = yield this.botbyeService.validate(request);
+            if (!this.tokenExtractor || typeof this.tokenExtractor !== "function") {
+                this.moduleApi.dev.getLogger().error("BotByeMiddleware: tokenExtractor is not provided. Pass tokenExtractor to BotByeModule.register() to extract the BotBye token from the request.");
+                request.__botbye_response = (0, node_core_1.createFallbackEvaluationResult)(node_core_1.SDK_ERROR);
+                next();
+                return;
+            }
+            const token = this.tokenExtractor(request);
+            request.__botbye_response = yield this.botbyeService.evaluate({
+                type: "validate",
+                request: { request: request, token: token !== null && token !== void 0 ? token : null },
+            });
             next();
         });
     }
@@ -39,5 +52,8 @@ exports.BotByeMiddleware = BotByeMiddleware;
 exports.BotByeMiddleware = BotByeMiddleware = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(botbye_constants_1.BOTBYE_SERVICE_DI_TOKEN)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, common_1.Inject)(botbye_constants_1.BOTBYE_MODULE_API_DI_TOKEN)),
+    __param(2, (0, common_1.Optional)()),
+    __param(2, (0, common_1.Inject)(botbye_constants_1.BOTBYE_TOKEN_EXTRACTOR_DI_TOKEN)),
+    __metadata("design:paramtypes", [Object, Object, Function])
 ], BotByeMiddleware);
