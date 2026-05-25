@@ -1,6 +1,6 @@
 {
   "name": "@botbye/nest-core",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "BotBye! NestJS integration core",
   "main": "src/index.js",
   "types": "src/index.d.ts",
@@ -26,7 +26,7 @@
     "url": "https://github.com/botbye/botbye-nest-core"
   },
   "dependencies": {
-    "@botbye/node-core": "^2.0.0"
+    "@botbye/node-core": "^2.1.1"
   },
   "peerDependencies": {
     "@nestjs/common": ">=10"

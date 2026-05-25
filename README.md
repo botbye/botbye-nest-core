@@ -123,7 +123,6 @@ Use at the outermost layer — guard, route handler, middleware — when you jus
     // Option B: construct request info manually
     | { ip: string; headers: Record<string, string>; requestMethod?: string | null; requestUri?: string | null; token?: string | null };
   customFields?: Record<string, string>;
-  config?: { bypassBotValidation?: boolean | null };
 }
 ```
 
@@ -161,7 +160,7 @@ export class BotProtectionGuard implements CanActivate {
 
 ### `risk` — domain-level risk scoring
 
-Use inside services that already know the user: auth, payments, account management. The purpose shifts from "is this a bot?" to **"is something suspicious happening for this user?"** — credential stuffing, account takeover, account sharing, logins from a new geo.
+Use inside services that already know the user: auth, payments, account management, etc. The purpose shifts from "is this a bot?" to **"is something suspicious happening for this user?"** — credential stuffing, account takeover, account sharing, logins from a new geo.
 
 **Event fields:**
 
@@ -183,7 +182,6 @@ Use inside services that already know the user: auth, payments, account manageme
   };
   customFields?: Record<string, string>;
   botbyeResult?: string;
-  config?: { bypassBotValidation?: boolean | null };
 }
 ```
 
@@ -247,7 +245,6 @@ Use when you have all context at once: raw request, token, user, and event. Equi
     phone?: string | null;
   };
   customFields?: Record<string, string>;
-  config?: { bypassBotValidation?: boolean | null };
 }
 ```
 
@@ -306,11 +303,11 @@ type TEvaluationResult =
       risk_score: number;
       scores: Record<string, number>;
       signals: string[];
-      config: { bypass_bot_validation: boolean };
+      botbye_result?: string;
     }
   | {
       decision: "ALLOW" | "BLOCK" | "CHALLENGE";
-      config: { bypass_bot_validation: boolean };
+      botbye_result?: string;
       error: { message: string };
     };
 ```
@@ -333,8 +330,7 @@ Blocked (bot detected):
   "decision": "BLOCK",
   "risk_score": 0.95,
   "scores": { "bot": 0.95 },
-  "signals": ["AutomationTool"],
-  "config": { "bypass_bot_validation": false }
+  "signals": ["AutomationTool"]
 }
 ```
 
@@ -346,8 +342,7 @@ Allowed:
   "decision": "ALLOW",
   "risk_score": 0.05,
   "scores": { "bot": 0.05, "ato": 0.02 },
-  "signals": [],
-  "config": { "bypass_bot_validation": false }
+  "signals": []
 }
 ```
 
@@ -360,8 +355,7 @@ Challenge:
   "risk_score": 0.65,
   "scores": { "bot": 0.65 },
   "signals": ["SuspiciousFingerprint"],
-  "challenge": { "type": "captcha", "token": "..." },
-  "config": { "bypass_bot_validation": false }
+  "challenge": { "type": "captcha", "token": "..." }
 }
 ```
 
@@ -370,7 +364,6 @@ Invalid `serverKey`:
 ```json
 {
   "decision": "ALLOW",
-  "config": { "bypass_bot_validation": true },
   "error": { "message": "[BotBye] Bad Request: Invalid Server Key" }
 }
 ```
