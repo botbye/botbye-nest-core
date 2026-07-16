@@ -355,7 +355,7 @@ Challenge:
   "risk_score": 0.65,
   "scores": { "bot": 0.65 },
   "signals": ["SuspiciousFingerprint"],
-  "challenge": { "type": "captcha", "token": "..." }
+  "challenge": { "type": "CAPTCHA", "token": "..." }
 }
 ```
 
@@ -422,4 +422,129 @@ To apply middleware only to specific routes, replace `.forRoutes("*")` with a pa
 // Scoped: protect only routes registered under "protected"
 consumer.apply(BotByeMiddleware).forRoutes("protected");
 ```
+
+## Anti-Phishing
+
+BotBye's anti-phishing detects look-alike sites that clone your pages to steal credentials. This integration serves the detection **catcher** from your own origin, so the BotBye domain stays hidden from the client.
+
+- [Anti-Phishing Protection overview](https://botbye.com/docs/anti-phishing/overview)
+- [Why a server-side integration is needed](https://botbye.com/docs/anti-phishing/overview#server-integration)
+
+Anti-phishing is identified by its own `clientKey` (available in your Phishing Project in the Dashboard), not the server key used by `evaluate`, so it is configured separately. It also has its own DI wiring — `getPhishingProvidersList` / `getPhishingExports` — parallel to the `evaluate` wiring above.
+
+### Building a custom integration
+
+Implement a `BotByePhishingModule` using `getPhishingProvidersList` and `getPhishingExports`. Import `phishingModuleApiFactory` and a phishing HTTP client from `@botbye/node-core` directly.
+
+```typescript
+// botbye-phishing.module.ts
+import { Module, DynamicModule } from "@nestjs/common";
+import { getPhishingProvidersList, getPhishingExports, type TBotByePhishingModuleOptions } from "@botbye/nest-core";
+import { phishingModuleApiFactory } from "@botbye/node-core";
+import { nodePhishingHttpClient } from "@botbye/node-core/phishing-node-http-client";
+import type { MyRequest } from "my-framework";
+
+const createPhishingModuleApi = () =>
+  phishingModuleApiFactory<MyRequest>({
+    httpClient: nodePhishingHttpClient,
+    catcherRequestInfoExtractor: (request) => ({
+      headers: request.headers as Record<string, string>,
+    }),
+  });
+
+@Module({})
+export class BotByePhishingModule {
+  static register(options: TBotByePhishingModuleOptions): DynamicModule {
+    return {
+      module: BotByePhishingModule,
+      providers: getPhishingProvidersList(options, createPhishingModuleApi()),
+      exports: getPhishingExports(),
+    };
+  }
+}
+```
+
+Register the module alongside `BotByeModule` in your root module:
+
+```typescript
+import { Module } from "@nestjs/common";
+import { BotByePhishingModule } from "./botbye-phishing.module";
+
+@Module({
+  imports: [
+    BotByePhishingModule.register({
+      // clientKey from your Phishing Project on the Admin Dashboard
+      clientKey: "00000000-0000-0000-0000-000000000000",
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+`getPhishingProvidersList` registers three providers under the following DI tokens — all exported by `getPhishingExports()`:
+
+| Token | What it provides |
+|---|---|
+| `BOTBYE_PHISHING_SERVICE_DI_TOKEN` | `BotByePhishingService<T>` — the injectable service for calling `fetchCatcher` |
+| `BOTBYE_PHISHING_MODULE_API_DI_TOKEN` | The `TPhishingModuleApi<T>` instance created by `phishingModuleApiFactory` |
+| `BOTBYE_PHISHING_MODULE_OPTIONS_DI_TOKEN` | The options object passed to `register()` |
+
+### `register` options
+
+`TBotByePhishingModuleOptions` is the standard phishing `init` options:
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `clientKey` | `string` | Yes | `clientKey` from your Phishing Project on the Admin Dashboard |
+| `url` | `string` | No | Override BotBye API endpoint (default: `https://verify.botbye.com`) |
+| `logger.level` | `"error" \| "warn" \| "info" \| "debug" \| "log"` | No | Log level (default: `"info"`) |
+| `logger.logger` | `TLogger` | No | Custom logger instance implementing `{ error, warn, info, debug, log }` |
+| `timeouts.fetchCatcher` | `number` | No | Timeout in milliseconds for each `fetchCatcher` call |
+
+### Usage
+
+Anti-phishing needs **two routes on your own origin**, each proxied through `fetchCatcher`:
+
+- **SVG route** — serves the SVG catcher. This is the URL your [client](https://botbye.com/docs/anti-phishing/integrations/client/js-tag#getcatcher-options) passes to `getCatcher({ url })`.
+- **PNG route** — serves the PNG that the SVG references (via `innerPngUrl`).
+
+After registering the module, inject `IBotByePhishingService` via `BOTBYE_PHISHING_SERVICE_DI_TOKEN` and call `fetchCatcher` from a controller. Pass the raw request as `request` and the `format`. For the SVG, `innerPngUrl` must be the **absolute URL** of your PNG route — the browser loads that PNG directly from your origin.
+
+```typescript
+import { Controller, Get, Inject, Req, Res } from "@nestjs/common";
+import { BOTBYE_PHISHING_SERVICE_DI_TOKEN, IBotByePhishingService } from "@botbye/nest-core";
+import type { MyRequest, MyResponse } from "my-framework";
+
+// Absolute URL of your PNG endpoint — the SVG catcher references it through innerPngUrl.
+const PNG_CATCHER_URL = "https://your-site.example/botbye-catcher.png";
+
+@Controller()
+export class PhishingCatcherController {
+  constructor(
+    @Inject(BOTBYE_PHISHING_SERVICE_DI_TOKEN) private readonly phishing: IBotByePhishingService<MyRequest>,
+  ) {}
+
+  // Endpoint 1 — SVG catcher (this URL goes into the catcher element on your pages)
+  @Get("/botbye-catcher.svg")
+  async svg(@Res() res: MyResponse, @Req() request: MyRequest) {
+    const catcher = await this.phishing.fetchCatcher({
+      request,
+      format: "svg",
+      innerPngUrl: PNG_CATCHER_URL, // absolute URL of the PNG endpoint below
+    });
+
+    res.status(catcher.status).set(catcher.headers).send(Buffer.from(catcher.body));
+  }
+
+  // Endpoint 2 — companion PNG the SVG above references via innerPngUrl (PNG_CATCHER_URL)
+  @Get("/botbye-catcher.png")
+  async png(@Res() res: MyResponse, @Req() request: MyRequest) {
+    const catcher = await this.phishing.fetchCatcher({ request, format: "png" });
+
+    res.status(catcher.status).set(catcher.headers).send(Buffer.from(catcher.body));
+  }
+}
+```
+
+We recommend embedding the **SVG catcher**: it is designed to keep tracking even when a phishing site copies all of your assets to its own infrastructure (the PNG route exists because the SVG catcher relies on it).
 

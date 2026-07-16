@@ -4,4 +4,8 @@ export type { IBotByeService, TBotByeModuleOptions, TTokenExtractor, } from "./b
 export { BotByeMiddleware } from "./botbye.middleware";
 export { BotByeService } from "./botbye.service";
 export { getProvidersList, getExports } from "./botbye.utils";
+export { BOTBYE_PHISHING_MODULE_OPTIONS_DI_TOKEN, BOTBYE_PHISHING_SERVICE_DI_TOKEN, BOTBYE_PHISHING_MODULE_API_DI_TOKEN, } from "./botbye-phishing.constants";
+export type { IBotByePhishingService, TBotByePhishingModuleOptions, } from "./botbye-phishing.types";
+export { BotByePhishingService } from "./botbye-phishing.service";
+export { getPhishingProvidersList, getPhishingExports } from "./botbye-phishing.utils";
 export type * from "@botbye/node-core";

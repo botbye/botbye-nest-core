@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExports = exports.getProvidersList = exports.BotByeService = exports.BotByeMiddleware = exports.BotByeResponse = exports.BOTBYE_TOKEN_EXTRACTOR_DI_TOKEN = exports.BOTBYE_MODULE_API_DI_TOKEN = exports.BOTBYE_SERVICE_DI_TOKEN = exports.BOTBYE_MODULE_OPTIONS_DI_TOKEN = void 0;
+exports.getPhishingExports = exports.getPhishingProvidersList = exports.BotByePhishingService = exports.BOTBYE_PHISHING_MODULE_API_DI_TOKEN = exports.BOTBYE_PHISHING_SERVICE_DI_TOKEN = exports.BOTBYE_PHISHING_MODULE_OPTIONS_DI_TOKEN = exports.getExports = exports.getProvidersList = exports.BotByeService = exports.BotByeMiddleware = exports.BotByeResponse = exports.BOTBYE_TOKEN_EXTRACTOR_DI_TOKEN = exports.BOTBYE_MODULE_API_DI_TOKEN = exports.BOTBYE_SERVICE_DI_TOKEN = exports.BOTBYE_MODULE_OPTIONS_DI_TOKEN = void 0;
 var botbye_constants_1 = require("./botbye.constants");
 Object.defineProperty(exports, "BOTBYE_MODULE_OPTIONS_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_MODULE_OPTIONS_DI_TOKEN; } });
 Object.defineProperty(exports, "BOTBYE_SERVICE_DI_TOKEN", { enumerable: true, get: function () { return botbye_constants_1.BOTBYE_SERVICE_DI_TOKEN; } });
@@ -15,3 +15,12 @@ Object.defineProperty(exports, "BotByeService", { enumerable: true, get: functio
 var botbye_utils_1 = require("./botbye.utils");
 Object.defineProperty(exports, "getProvidersList", { enumerable: true, get: function () { return botbye_utils_1.getProvidersList; } });
 Object.defineProperty(exports, "getExports", { enumerable: true, get: function () { return botbye_utils_1.getExports; } });
+var botbye_phishing_constants_1 = require("./botbye-phishing.constants");
+Object.defineProperty(exports, "BOTBYE_PHISHING_MODULE_OPTIONS_DI_TOKEN", { enumerable: true, get: function () { return botbye_phishing_constants_1.BOTBYE_PHISHING_MODULE_OPTIONS_DI_TOKEN; } });
+Object.defineProperty(exports, "BOTBYE_PHISHING_SERVICE_DI_TOKEN", { enumerable: true, get: function () { return botbye_phishing_constants_1.BOTBYE_PHISHING_SERVICE_DI_TOKEN; } });
+Object.defineProperty(exports, "BOTBYE_PHISHING_MODULE_API_DI_TOKEN", { enumerable: true, get: function () { return botbye_phishing_constants_1.BOTBYE_PHISHING_MODULE_API_DI_TOKEN; } });
+var botbye_phishing_service_1 = require("./botbye-phishing.service");
+Object.defineProperty(exports, "BotByePhishingService", { enumerable: true, get: function () { return botbye_phishing_service_1.BotByePhishingService; } });
+var botbye_phishing_utils_1 = require("./botbye-phishing.utils");
+Object.defineProperty(exports, "getPhishingProvidersList", { enumerable: true, get: function () { return botbye_phishing_utils_1.getPhishingProvidersList; } });
+Object.defineProperty(exports, "getPhishingExports", { enumerable: true, get: function () { return botbye_phishing_utils_1.getPhishingExports; } });
